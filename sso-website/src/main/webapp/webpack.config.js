@@ -2,7 +2,9 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        loginPage: './source/login/index.js'
+        loginPage: './source/login/index.js',
+        modifyPasswdPage: './source/modifypasswd/index.js',
+        addUserPage: './source/adduser/index.js'
     },
     output: {
         path: path.join(__dirname, './dist'),
