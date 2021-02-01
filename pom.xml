@@ -9,9 +9,117 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
+        <module>sso-service</module>
         <module>sso-website</module>
+        <module>catalina</module>
     </modules>
 
     <name>sso-center</name>
     <packaging>pom</packaging>
+
+    <profiles>
+        <profile>
+            <id>buildNewJar</id>
+            <activation>
+                <file>
+                    <exists>src/main/pub</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-dependencies</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+                                    <overWriteReleases>false</overWriteReleases>
+                                    <overWriteSnapshots>false</overWriteSnapshots>
+                                    <overWriteIfNewer>true</overWriteIfNewer>
+                                    <includeScope>compile</includeScope>
+                                    <includeScope>runtime</includeScope>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.gmaven</groupId>
+                        <artifactId>gmaven-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>make new jar</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <source>
+                                        private String getWebContextName(File warFile) {
+                                            String context = null;
+                                            java.util.jar.JarFile jarFile = null;
+                                            try {
+                                                jarFile = new java.util.jar.JarFile(warFile)
+                                                context = jarFile.getManifest().getMainAttributes().getValue("WebContext-Name")
+                                                context = context == null ? "ROOT" : context
+                                                return context;
+                                            } catch (Exception e) {
+                                                context = "ROOT";
+                                            } finally {
+                                                if (jarFile != null) {
+                                                    jarFile.close();
+                                                }
+                                            }
+                                            return context;
+                                        }
+
+                                        finalDir = "${project.build.directory}/finalResourceDir"
+                                        ant.mkdir(dir: "${finalDir}")
+                                        webappDir = "${finalDir}/webapps"
+                                        ant.mkdir(dir: "${webappDir}")
+
+                                        // copy pub files
+                                        System.out.println("------------------------------copy pub files------------------")
+                                        resourcesDir = "${project.basedir}/src/main/pub"
+                                        ant.copy(todir: "${finalDir}") {
+                                            fileset(dir: "${resourcesDir}") {
+                                                include(name: "**")
+                                            }
+                                        }
+
+                                        // copy war lib
+                                        System.out.println("------------------------------copy war lib------------------")
+                                        dependenciesDir = "${project.build.directory}/dependencies"
+                                        for (File file : new File("${dependenciesDir}").listFiles()) {
+                                            String filePath = file.getAbsolutePath();
+                                            fileName = file.getName();
+                                            if (fileName.endsWith(".war")) {
+                                                context = getWebContextName(file)
+                                                ant.mkdir(dir: "${webappDir}/" + context)
+                                                ant.unzip(src: filePath, dest: "${webappDir}/" + context)
+                                            }
+                                        }
+
+                                        // zip files
+                                        outputDir = "${project.build.directory}/output";
+                                        ant.mkdir(dir: "${outputDir}")
+                                        ant.zip(destfile: "${outputDir}/SsoCenter.zip") {
+                                            fileset(dir: "${finalDir}")
+                                        }
+                                    </source>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
