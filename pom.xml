@@ -17,6 +17,12 @@
     <name>sso-center</name>
     <packaging>pom</packaging>
 
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <profiles>
         <profile>
             <id>buildNewJar</id>
@@ -110,7 +116,7 @@
                                         // zip files
                                         outputDir = "${project.build.directory}/output";
                                         ant.mkdir(dir: "${outputDir}")
-                                        ant.zip(destfile: "${outputDir}/SsoCenter.zip") {
+                                        ant.zip(destfile: "${outputDir}/SSOCenter.zip") {
                                             fileset(dir: "${finalDir}")
                                         }
                                     </source>
