@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           https://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:property-placeholder location="classpath:jdbc.properties" />
+
+    <context:component-scan base-package="com.demo" />
+
+    <context:annotation-config/>
+
+    <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" name="dataSource">
+        <property name="idleConnectionTestPeriod" value="${jdbc.idleConnectionTestPeriod}" />
+        <property name="user" value="${jdbc.user}" />
+        <property name="password" value="${jdbc.passwd}" />
+        <property name="driverClass" value="${jdbc.driver}" />
+        <property name="jdbcUrl" value="${jdbc.url}" />
+    </bean>
+
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" name="dataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" name="sqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:mapper/*.xml" />
+    </bean>
+
+    <bean class="org.mybatis.spring.SqlSessionTemplate" name="sqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean" />
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.demo.dao" />
+        <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate" />
+    </bean>
+
+    <tx:annotation-driven transaction-manager="dataSourceTransactionManager" />
+</beans>
