@@ -6,5 +6,5 @@ ReactDOM.render(
     <React.StrictMode>
         <LoginPage />
     </React.StrictMode>,
-    document.getElementById('loginRoot')
+    document.getElementById('root')
 );
