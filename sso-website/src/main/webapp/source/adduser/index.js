@@ -6,5 +6,5 @@ ReactDOM.render(
     <React.StrictMode>
         <AddUserPage />
     </React.StrictMode>,
-    document.getElementById('addUserRoot')
+    document.getElementById('root')
 );
