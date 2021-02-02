@@ -1,21 +1,26 @@
 #!/bin/bash
 
-#APP 相关
-export APP_NAME=SsoCenter
-export APP_ROOT=/usr/bale/deploy/$APP_NAME
-export APP_PROCESS_NAME=$APP_NAME-0
-export APP_LOG_DIR=$APP_ROOT/$APP_PROCESS_NAME/log
-mkdir -p $APP_LOG_DIR
+#APP名称
+export APP_NAME=SSOCenter
 
+#APP根目录/usr/bale/deploy/SSOCenter
+export APP_ROOT=/usr/bale/deploy/$APP_NAME
+
+#APP进程名
+export APP_PROCESS_NAME=ssocenter
+
+#tomcat工作目录/usr/bale/deploy/SSOCenter
 export CATALINA_BASE=$APP_ROOT
-export CATALINA_LOG_DIR=$APP_LOG_DIR/tomcatlog
-mkdir -p $CATALINA_LOG_DIR
+
+#tomcat日志目录
+CATALINA_LOG_DIR=$CATALINA_BASE/logs
+if [ ! -d $CATALINA_LOG_DIR ];then
+  mkdir -p $CATALINA_LOG_DIR
+fi
 export CATALINA_OUT=$CATALINA_LOG_DIR/catalina.out
 
 JAVA_OPTS="-Dfile.encoding=UTF-8"
-JAVA_OPTS="$JAVA_OPTS -Dlog.dir=$APP_LOG_DIR"
-JAVA_OPTS="$JAVA_OPTS -DTOMCAT_LOG_DIR=$CATALINA_LOG_DIR -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
-#JAVA_OPTS="$JAVA_OPTS -DTOMCAT_LOG_DIR=$CATALINA_LOG_DIR  -DTOMCAT_WORK_DIR=$TOMCAT_WORK_DIR -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
+JAVA_OPTS="$JAVA_OPTS -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
 export JAVA_OPTS="$JAVA_OPTS"
 
 bash $CATALINA_HOME/bin/catalina.sh start
