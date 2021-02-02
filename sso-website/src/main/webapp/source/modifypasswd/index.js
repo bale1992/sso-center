@@ -6,5 +6,5 @@ ReactDOM.render(
     <React.StrictMode>
         <ModifyPasswdPage />
     </React.StrictMode>,
-    document.getElementById('modifyPasswdRoot')
+    document.getElementById('root')
 );
