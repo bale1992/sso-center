@@ -14,6 +14,7 @@ public class RestBeanPostProcessor implements BeanPostProcessor {
         log.warn("Current init bean, beanName:{}, beanClassName:{}", beanName, bean.getClass().getName());
         if (ResourcePool.isController(bean)) {
             ResourcePool.addRestController(bean);
+            ResourcePool.addRestControllerBeanName(bean, beanName);
         }
         return bean;
     }
