@@ -23,4 +23,7 @@ JAVA_OPTS="-Dfile.encoding=UTF-8"
 JAVA_OPTS="$JAVA_OPTS -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
 export JAVA_OPTS="$JAVA_OPTS"
 
+CATALINA_OPTS="-server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=39999"
+export CATALINA_OPTS="$CATALINA_OPTS"
+
 bash $CATALINA_HOME/bin/catalina.sh start
