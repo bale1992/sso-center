@@ -5,7 +5,6 @@ import com.demo.service.TblUserService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -16,8 +15,7 @@ import javax.annotation.Resource;
  * @author makejava
  * @since 2021-02-01 10:33:53
  */
-@RestController
-@RequestMapping("/rest/user")
+@RestController("/ssoservice/user")
 public class TblUserController {
     /**
      * 服务对象
@@ -31,7 +29,7 @@ public class TblUserController {
      * @param tblUser 实例对象
      * @return 实例对象
      */
-    @PostMapping("/addUser")
+    @PostMapping
     public void addUser(TblUser tblUser) {
         tblUserService.insert(tblUser);
     }
@@ -42,7 +40,7 @@ public class TblUserController {
      * @param tblUser 实例对象
      * @return 实例对象
      */
-    @PutMapping("/modifyPasswd")
+    @PutMapping
     public void modifyUserPasswd(TblUser tblUser) {
         tblUserService.update(tblUser);
     }
@@ -53,7 +51,7 @@ public class TblUserController {
      * @param userName 主键
      * @return 是否成功
      */
-    @DeleteMapping("/deleteUser")
+    @DeleteMapping
     public void deleteUserByName(String userName) {
         tblUserService.deleteUser(userName);
     }
