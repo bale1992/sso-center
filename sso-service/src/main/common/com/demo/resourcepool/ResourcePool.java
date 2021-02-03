@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
@@ -18,7 +17,9 @@ public final class ResourcePool {
     /*
       key: RestController value
      */
-    private static final Map<String, Map<Annotation, Method>> CONTROLLER_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, Map<String, Method>> CONTROLLER_MAP = new ConcurrentHashMap<>();
+
+    private static final Map<String, String> BEAN_NAME_MAP = new ConcurrentHashMap<>();
 
     private ResourcePool() {
     }
@@ -29,7 +30,7 @@ public final class ResourcePool {
 
     public static void addRestController(Object bean) {
         String mapKey = bean.getClass().getAnnotation(RestController.class).value();
-        Map<Annotation, Method> mapValue = new ConcurrentHashMap<>();
+        Map<String, Method> mapValue = new ConcurrentHashMap<>();
         Arrays.stream(bean.getClass().getMethods()).forEach(method -> {
             if (method.isAnnotationPresent(GetMapping.class) || method.isAnnotationPresent(PostMapping.class)
                     || method.isAnnotationPresent(PutMapping.class) || method.isAnnotationPresent(DeleteMapping.class)) {
@@ -41,22 +42,31 @@ public final class ResourcePool {
     }
 
     public static boolean hasRestController(String restPath) {
-        return Objects.isNull(CONTROLLER_MAP.get(restPath));
+        return Objects.nonNull(CONTROLLER_MAP.get(restPath));
     }
 
-    public static Method getRestController(String restPath, Annotation annotation) {
-        return CONTROLLER_MAP.get(restPath).get(annotation);
+    public static Method getRestController(String restPath, String methodClass) {
+        return CONTROLLER_MAP.get(restPath).get(methodClass);
     }
 
-    private static Annotation getMappingAnnotation(Method method) {
+    public static void addRestControllerBeanName(Object bean, String beanName) {
+        String mapKey = bean.getClass().getAnnotation(RestController.class).value();
+        BEAN_NAME_MAP.putIfAbsent(mapKey, beanName);
+    }
+
+    public static String getRestControllerBeanName(String restPath) {
+        return BEAN_NAME_MAP.get(restPath);
+    }
+
+    private static String getMappingAnnotation(Method method) {
         if (method.isAnnotationPresent(GetMapping.class)) {
-            return method.getAnnotation(GetMapping.class);
+            return GetMapping.class.getName();
         } else if (method.isAnnotationPresent(PostMapping.class)) {
-            return method.getAnnotation(PostMapping.class);
+            return PostMapping.class.getName();
         } else if (method.isAnnotationPresent(PutMapping.class)) {
-            return method.getAnnotation(PutMapping.class);
+            return PutMapping.class.getName();
         } else {
-            return method.getAnnotation(DeleteMapping.class);
+            return DeleteMapping.class.getName();
         }
     }
 }
