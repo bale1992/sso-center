@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.io.Serializable;
  * @since 2021-02-01 10:33:43
  */
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,9 +26,9 @@ public class TblUser implements Serializable {
 
     private Long id;
 
-    private String username;
+    private String userName;
 
-    private String password;
+    private String passWord;
 
     private Object role;
 
