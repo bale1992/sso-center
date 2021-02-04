@@ -1,110 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.demo.dao.TblUserDao">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           https://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           http://www.springframework.org/schema/aop
+                           https://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <resultMap type="com.demo.entity.TblUser" id="TblUserMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userName" column="userName" jdbcType="VARCHAR"/>
-        <result property="passWord" column="password" jdbcType="VARCHAR"/>
-        <result property="role" column="role" jdbcType="OTHER"/>
-        <result property="isLogin" column="isLogin" jdbcType="OTHER"/>
-        <result property="isAdminFirstLogin" column="isAdminFirstLogin" jdbcType="OTHER"/>
-    </resultMap>
+    <context:property-placeholder location="classpath:jdbc.properties" />
 
-    <!--查询单个-->
-    <select id="queryById" resultMap="TblUserMap">
-        select
-          id, userName, password, role, isLogin, isAdminFirstLogin
-        from bale.TBL_USER
-        where id = #{id}
-    </select>
+    <context:component-scan base-package="com.demo" />
 
-    <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="TblUserMap">
-        select
-          id, userName, password, role, isLogin, isAdminFirstLogin
-        from bale.TBL_USER
-        limit #{offset}, #{limit}
-    </select>
+    <context:annotation-config/>
 
-    <!--通过实体作为筛选条件查询-->
-    <select id="queryAll" resultMap="TblUserMap">
-        select
-        id, userName, password, role, isLogin, isAdminFirstLogin
-        from bale.TBL_USER
-        <where>
-            <if test="id != null">
-                and id = #{id}
-            </if>
-            <if test="username != null and username != ''">
-                and userName = #{username}
-            </if>
-            <if test="password != null and password != ''">
-                and password = #{password}
-            </if>
-            <if test="role != null">
-                and role = #{role}
-            </if>
-            <if test="islogin != null">
-                and isLogin = #{islogin}
-            </if>
-            <if test="isadminfirstlogin != null">
-                and isAdminFirstLogin = #{isadminfirstlogin}
-            </if>
-        </where>
-    </select>
+    <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" name="dataSource">
+        <property name="idleConnectionTestPeriod" value="${jdbc.idleConnectionTestPeriod}" />
+        <property name="user" value="${jdbc.user}" />
+        <property name="password" value="${jdbc.passwd}" />
+        <property name="driverClass" value="${jdbc.driver}" />
+        <property name="jdbcUrl" value="${jdbc.url}" />
+    </bean>
 
-    <!--新增所有列-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into bale.TBL_USER(userName, password, role, isLogin, isAdminFirstLogin)
-        values (#{userName}, #{passWord}, #{role}, #{isLogin}, #{isAdminFirstLogin})
-    </insert>
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" name="dataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
 
-    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into bale.TBL_USER(userName, password, role, isLogin, isAdminFirstLogin)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.username}, #{entity.password}, #{entity.role}, #{entity.islogin}, #{entity.isadminfirstlogin})
-        </foreach>
-    </insert>
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" name="sqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:mapper/*.xml" />
+    </bean>
 
-    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into bale.TBL_USER(userName, password, role, isLogin, isAdminFirstLogin)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.username}, #{entity.password}, #{entity.role}, #{entity.islogin}, #{entity.isadminfirstlogin})
-        </foreach>
-        on duplicate key update
-        userName = values(userName) , password = values(password) , role = values(role) , isLogin = values(isLogin) ,
-        isAdminFirstLogin = values(isAdminFirstLogin)
-    </insert>
+    <bean class="org.mybatis.spring.SqlSessionTemplate" name="sqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean" />
+    </bean>
 
-    <!--通过主键修改数据-->
-    <update id="update">
-        update bale.TBL_USER
-        <set>
-            <if test="username != null and username != ''">
-                userName = #{username},
-            </if>
-            <if test="password != null and password != ''">
-                password = #{password},
-            </if>
-            <if test="role != null">
-                role = #{role},
-            </if>
-            <if test="islogin != null">
-                isLogin = #{islogin},
-            </if>
-            <if test="isadminfirstlogin != null">
-                isAdminFirstLogin = #{isadminfirstlogin},
-            </if>
-        </set>
-        where id = #{id}
-    </update>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.demo.dao" />
+        <property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate" />
+    </bean>
 
-    <!--通过主键删除-->
-    <delete id="deleteByUserName">
-        delete from bale.TBL_USER where userName = #{userName}
-    </delete>
+    <tx:annotation-driven transaction-manager="dataSourceTransactionManager" />
 
-</mapper>
+    <aop:aspectj-autoproxy />
+</beans>
