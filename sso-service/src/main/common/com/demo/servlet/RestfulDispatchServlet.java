@@ -60,20 +60,26 @@ public class RestfulDispatchServlet extends HttpServlet {
             return;
         }
 
+        // 获取controller对应方法
         final Method restController = ResourcePool.getRestController(pathInfo, clazz.getName());
         if (Objects.isNull(restController)) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Rest controller not exists.");
             return;
         }
 
+        // 获取controller beanName
         final String controllerBeanName = ResourcePool.getRestControllerBeanName(pathInfo);
         if (Objects.isNull(controllerBeanName) || !SpringContextUtil.containsBean(controllerBeanName)) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Rest controller bean not exists.");
             return;
         }
 
+        // 获取controller bean
         final Object controllerBean = SpringContextUtil.getBean(controllerBeanName);
-        final Object[] methodArgs = getMethodArgs(req, restController, clazz);
+
+        // 获取controller对应方法入参
+        final RestfulContext restfulContext = new RestfulContext();
+        final Object[] methodArgs = getMethodArgs(req, restfulContext, restController, clazz);
         if (Objects.isNull(methodArgs)) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Input param invalid.");
             return;
@@ -81,17 +87,21 @@ public class RestfulDispatchServlet extends HttpServlet {
 
         try {
             restController.invoke(controllerBean, methodArgs);
+            if (restfulContext.getHttpStatus() == HttpServletResponse.SC_FOUND) {
+                resp.setHeader("redirect", "redirect");
+                resp.sendRedirect(restfulContext.getResponseInfo());
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
-            log.error("Invoke controller method exception:{}", e.getMessage());
+            log.error("Invoke controller method exception:{}", e.toString());
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Invoke controller method exception.");
         }
     }
 
-    private Object[] getMethodArgs(HttpServletRequest req, Method method, Class<?> clazz) {
+    private Object[] getMethodArgs(HttpServletRequest req, RestfulContext context, Method method, Class<?> clazz) {
         // 获取方法入参
         final Parameter[] methodParameters = method.getParameters();
         final int parameterSize = methodParameters.length;
-        final Object[] args = new Object[parameterSize];// 方法入参
+        final Object[] args = new Object[parameterSize];// 方法入参输出
 
         if (clazz == GetMapping.class || clazz == DeleteMapping.class) {
             final Object[] objects = req.getParameterMap().values().toArray(new Object[0]);
@@ -99,13 +109,15 @@ public class RestfulDispatchServlet extends HttpServlet {
                 return null;
             }
 
-            for (int i = 0; i < parameterSize; i++) {
+            args[0] = context;
+            for (int i = 1; i < parameterSize; i++) {
                 Parameter parameter = methodParameters[i];
                 if (parameter.isAnnotationPresent(RequestParam.class)) {
                     args[i] = ConvertUtils.convert(objects[i], parameter.getType());
                 }
             }
         } else if (clazz == PostMapping.class || clazz == PutMapping.class) {
+            // post & put方法要将入参转换为对应的entity
             StringBuilder responseStrBuilder = new StringBuilder();
             try (final InputStreamReader inputStreamReader = new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8);
                  final BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
@@ -119,7 +131,8 @@ public class RestfulDispatchServlet extends HttpServlet {
                 return null;
             }
 
-            for (int i = 0; i < parameterSize; i++) {
+            args[0] = context;
+            for (int i = 1; i < parameterSize; i++) {
                 Parameter parameter = methodParameters[i];
                 if (parameter.isAnnotationPresent(RequestBody.class)) {
                     args[i] = JSON.parseObject(responseStrBuilder.toString(), parameter.getType());
