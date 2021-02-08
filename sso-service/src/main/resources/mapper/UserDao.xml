@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.dao.UserDao">
+
+    <resultMap type="com.demo.entity.UserEntity" id="TblUserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userName" column="userName" jdbcType="VARCHAR"/>
+        <result property="passWord" column="password" jdbcType="VARCHAR"/>
+        <result property="role" column="role" jdbcType="OTHER"/>
+        <result property="isLogin" column="isLogin" jdbcType="OTHER"/>
+        <result property="isAdminFirstLogin" column="isAdminFirstLogin" jdbcType="OTHER"/>
+    </resultMap>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into ssoservicedb.TBL_USER(userName, password, role, isLogin, isAdminFirstLogin)
+        values (#{userName}, #{passWord}, #{role}, #{isLogin}, #{isAdminFirstLogin})
+    </insert>
+
+    <!--通过唯一键修改数据-->
+    <update id="update">
+        update ssoservicedb.TBL_USER
+        <set>
+            <if test="passWord != null and passWord != ''">
+                password = #{passWord},
+            </if>
+            <if test="role != null">
+                role = #{role},
+            </if>
+            <if test="isLogin != null">
+                isLogin = #{isLogin},
+            </if>
+            <if test="isAdminFirstLogin != null">
+                isAdminFirstLogin = #{isAdminFirstLogin},
+            </if>
+        </set>
+        where userName = #{userName}
+    </update>
+
+    <select id="queryUserByUserName" parameterType="String" resultMap="TblUserMap">
+        select userName, password, role, isLogin, isAdminFirstLogin from ssoservicedb.TBL_USER
+        where userName = #{userName} limit 1
+    </select>
+
+</mapper>
