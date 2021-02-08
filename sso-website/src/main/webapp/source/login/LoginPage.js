@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 export default class LoginPage extends Component {
 
@@ -20,8 +21,24 @@ export default class LoginPage extends Component {
     }
 
     logInOnClick() {
-        console.log(this.state.userName);
-        console.log(this.state.passwd);
+        axios.post('/rest/ssoservice/login/login',
+            {
+                userName: this.state.userName,
+                passWord: this.state.passwd,
+            },
+            {
+                'Content-Type': 'application/json'
+            }
+        ).then(function (response) {
+            console.log(response);
+            if (response.headers['redirect'] === 'redirect') {// 这里的header设置没有用
+                console.log("aaaaaaaaaaaaaaaaaaa")
+                location.href = response.request.responseURL;
+            }
+            location.href = response.request.responseURL;
+        }).catch(function (error) {
+            console.log(error);
+        })
     }
 
     render() {
