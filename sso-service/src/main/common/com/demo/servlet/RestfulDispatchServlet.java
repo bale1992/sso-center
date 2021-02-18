@@ -88,8 +88,9 @@ public class RestfulDispatchServlet extends HttpServlet {
         try {
             restController.invoke(controllerBean, methodArgs);
             if (restfulContext.getHttpStatus() == HttpServletResponse.SC_FOUND) {
-                resp.setHeader("redirect", "redirect");
-                resp.sendRedirect(restfulContext.getResponseInfo());
+                // ajax只支持局部刷新, 不能用resp.sendRedirect
+                resp.addHeader("redirect", "redirect");
+                resp.addHeader("redirect-url", restfulContext.getResponseInfo());
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Invoke controller method exception:{}", e.toString());
