@@ -6,7 +6,8 @@ module.exports = {
     entry: {
         loginPage: './source/login/index.js',
         modifyPasswdPage: './source/modifypasswd/index.js',
-        addUserPage: './source/adduser/index.js'
+        addUserPage: './source/adduser/index.js',
+        appPage: './source/application/index.js'
     },
     output: {
         path: path.join(__dirname, './dist'),
@@ -52,6 +53,12 @@ module.exports = {
             filename: 'ModifyPasswdPage.html',
             title: '修改初始密码',
             chunks: ['modifyPasswdPage']
+        }),
+        new HtmlWebpackPlugin({
+            template: path.join(__dirname, '/source/index.html'),
+            filename: 'AppPage.html',
+            title: '应用页面入口',
+            chunks: ['appPage']
         }),
         new CleanWebpackPlugin()
     ],
