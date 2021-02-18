@@ -2,9 +2,12 @@ package com.demo.service;
 
 import com.demo.dao.UserDao;
 import com.demo.entity.UserEntity;
+import com.demo.servlet.RestfulContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 /**
  * (TblUser)表服务实现类
@@ -32,8 +35,22 @@ public class UserService {
      *
      * @param tblUser 实例对象
      */
-    public void update(UserEntity tblUser) {
-        this.tblUserDao.update(tblUser);
+    public void modifyUserPasswd(RestfulContext context, UserEntity tblUser) {
+        final UserEntity userEntity = this.tblUserDao.queryUserByUserName(tblUser.getUserName());
+        if (Objects.isNull(userEntity) || !Objects.equals(userEntity.getPassWord(), tblUser.getPassWord())) {
+            context.setHttpStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            context.setResponseInfo("Invalid user or password");
+            return;
+        }
+
+        UserEntity updateEntity = UserEntity.builder()
+                .userName(tblUser.getUserName())
+                .passWord(tblUser.getNewPassWord())
+                .role(userEntity.getRole())
+                .isLogin(userEntity.isLogin())
+                .isAdminFirstLogin(userEntity.isAdminFirstLogin())
+                .build();
+        this.tblUserDao.update(updateEntity);
     }
 
     /**
