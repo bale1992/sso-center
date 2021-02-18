@@ -7,6 +7,7 @@ export default class ModifyPasswdPage extends Component {
         super(props);
 
         this.state = {
+            userName: 'admin',
             oldPasswd: '',
             newPasswd: '',
             confirmNewPasswd: ''
@@ -38,16 +39,18 @@ export default class ModifyPasswdPage extends Component {
             alert('新旧密码不能相同!');
         }
 
-        axios.post('/rest/ssowebsite/modifypasswd',
+        axios.put('/rest/ssoservice/user',
             {
-                userName: 'admin',
-                newPasswd: newPasswd
+                userName: this.state.userName,
+                passWord: oldPasswd,
+                newPassWord: newPasswd
             },
             {
                 'Content-Type': 'application/json'
             }
         ).then(function (response) {
-            console.log(response);
+            // 重定向到登陆界面
+            location.href = '/ssowebsite/dist/LoginPage.html';
         }).catch(function (error) {
             console.log(error);
         })
