@@ -33,7 +33,8 @@ export default class LoginPage extends Component {
             if (response.headers['redirect'] === 'redirect') {
                 location.href = response.headers['redirect-url'];
             } else {
-                // 进入各个操作页面
+                // 重定向到总的页面入口
+                location.href = '/ssowebsite/dist/AppPage.html';
             }
         }).catch(function (error) {
             console.log(error);
