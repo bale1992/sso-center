@@ -31,7 +31,7 @@ public class UserController {
     @PutMapping
     @RestPath
     public void modifyUserPasswd(RestfulContext context, @RequestBody UserEntity tblUser) {
-        tblUserService.update(tblUser);
+        tblUserService.modifyUserPasswd(context, tblUser);
     }
 
     @DeleteMapping
