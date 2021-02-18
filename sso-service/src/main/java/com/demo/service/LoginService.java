@@ -38,7 +38,5 @@ public class LoginService {
             context.setHttpStatus(HttpServletResponse.SC_FOUND);
             context.setResponseInfo("/ssowebsite/dist/ModifyPasswdPage.html");
         }
-
-        // 重定向到总的页面入口
     }
 }
