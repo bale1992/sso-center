@@ -30,12 +30,11 @@ export default class LoginPage extends Component {
                 'Content-Type': 'application/json'
             }
         ).then(function (response) {
-            console.log(response);
-            if (response.headers['redirect'] === 'redirect') {// 这里的header设置没有用
-                console.log("aaaaaaaaaaaaaaaaaaa")
-                location.href = response.request.responseURL;
+            if (response.headers['redirect'] === 'redirect') {
+                location.href = response.headers['redirect-url'];
+            } else {
+                // 进入各个操作页面
             }
-            location.href = response.request.responseURL;
         }).catch(function (error) {
             console.log(error);
         })
