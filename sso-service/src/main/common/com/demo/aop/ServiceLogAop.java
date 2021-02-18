@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ServiceLogAop {
 
-    @Pointcut("execution(public * com.demo.service.*.*(*))")
+    @Pointcut("execution(public * com.demo.service.*.*(com.demo.servlet.RestfulContext,..))")
     public void pointcut() {
     }
 
