@@ -40,5 +40,6 @@ CATALINA_OPTS="-server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transpor
 export CATALINA_OPTS="$CATALINA_OPTS"
 
 #查询进程占用端口号 ss -tnlp | grep pid
+#keytool -genkeypair -alias "tomcat" -keyalg "RSA" -keystore tomcat.keystore
 
 bash $CATALINA_HOME/bin/catalina.sh start
