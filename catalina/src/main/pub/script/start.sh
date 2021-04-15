@@ -25,15 +25,10 @@ JAVA_OPTS="$JAVA_OPTS -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
 export JAVA_OPTS="$JAVA_OPTS"
 
 #初始化数据库
-DB_NAME="ssoservicedb"
-SQL_SCRIPT=$APP_ROOT/etc/database/ssoservice.sql
-DATASOURCE=$APP_ROOT/etc/datasource/datasource.properties
-CLASS_PATH_TEMP="$APP_ROOT/webapps/ROOT/WEB-INF/classes"
-EXT_DIR="$APP_ROOT/webapps/ROOT/WEB-INF/lib:$JAVA_HOME/jre/lib/ext"
-DB_INIT_OPTS="-Dinit.sqlScript=$SQL_SCRIPT"
-DB_INIT_OPTS="$DB_INIT_OPTS -Dinit.dataSource=$DATASOURCE"
-DB_INIT_OPTS="$DB_INIT_OPTS -Dinit.dbName=$DB_NAME"
-java $DB_INIT_OPTS -Djava.ext.dirs=$EXT_DIR -classpath $CLASS_PATH_TEMP com.demo.init.DBInitializer
+$APP_ROOT/script/initDataBase.sh
+
+#创建topic
+$APP_ROOT/script/createTopic.sh
 
 #开启远程调试
 CATALINA_OPTS="-server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=39999"

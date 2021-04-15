@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<topic>
+    <name>topic_three_partition_two_replication</name>
+    <partition>3</partition>
+    <replication>2</replication>
+</topic>

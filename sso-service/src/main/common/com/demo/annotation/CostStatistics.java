@@ -9,9 +9,8 @@ import java.lang.annotation.Target;
 /**
  * @author bale
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RestPath {
-    String value() default "";
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CostStatistics {
 }
