@@ -5,8 +5,13 @@ if [ -z $ZK_HOME ]; then
     exit 1
 fi
 
+# 替换IP
+HOST_IP_ADDR=$(hostname --all-ip-addresses | awk '{print $2}')
 ZK_BIN=$ZK_HOME/bin
 ZK_CONF=$ZK_HOME/conf
+sed -i "s/\${HOST_IP}/${HOST_IP_ADDR}/g" $ZK_CONF/zoo1.cfg
+sed -i "s/\${HOST_IP}/${HOST_IP_ADDR}/g" $ZK_CONF/zoo2.cfg
+sed -i "s/\${HOST_IP}/${HOST_IP_ADDR}/g" $ZK_CONF/zoo3.cfg
 
 if [ $1 == "start" ]; then
   $ZK_BIN/zkServer.sh start $ZK_CONF/zoo1.cfg

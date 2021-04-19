@@ -1,22 +1,23 @@
 #!/bin/bash
 
 TOPIC_CONF=$APP_ROOT/etc/topic/topics.cfg
-if [ -f $TOPIC_CONF ]; then
+if [ ! -f $TOPIC_CONF ]; then
     echo "topic conf file not exists"
     exit 1
 fi
 
 KAFKA_BIN=$KAFKA_HOME/kafka1/bin
-if [ -d $KAFKA_BIN ]; then
+if [ ! -d $KAFKA_BIN ]; then
     echo "kafka bin not exists"
     exit 1
 fi
 
-HOST_IP=""
-BOOTSTRAP_SERVER=$HOST_IP:9091,$HOST_IP:9092,$HOST_IP:9093
+HOST_IP=$(hostname --all-ip-addresses | awk '{print $2}')
+export BOOTSTRAP_SERVER=$HOST_IP:9091,$HOST_IP:9092,$HOST_IP:9093
 for line in $(cat $TOPIC_CONF)
 do
-    TEMP_CONF_FILE="$line.xml"
+    TEMP_CONF_FILE=$APP_ROOT/etc/topic
+    TEMP_CONF_FILE="$TEMP_CONF_FILE/$line.xml"
     echo "$TEMP_CONF_FILE"
 
     TOPIC_NAME=`grep -E -o -e '<name>.+</name>' $TEMP_CONF_FILE | sed 's/<name>//g'|sed 's/<\/name>//g'`

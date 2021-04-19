@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
 import static com.demo.util.KafkaClientUtil.TOPIC_ONE;
 import static com.demo.util.KafkaClientUtil.TOPIC_THREE;
@@ -24,8 +25,6 @@ import static com.demo.util.KafkaClientUtil.TOPIC_TWO;
 @Service
 public class KafkaProducerService {
 
-    private final int RECORD_NUM = 1000000;
-
     private final ExecutorService singleThreadPool = ExecutorsUtil
             .getSingleExecutorService("commonSingleThreadPool");
 
@@ -35,35 +34,22 @@ public class KafkaProducerService {
      * 向单分区topic中生产100W条数据
      */
     public void one() {
-        CompletableFuture.runAsync(() -> {
-            for (int i = 1; i <= RECORD_NUM; i++) {
-                ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_ONE,
-                        JSON.toJSONString(UserEntity.builder().id((long) (i % 100)).userName("bale" + i).build()));
-                kafkaProducer.send(producerRecord, ((recordMetadata, e) -> {
-                    if (e != null) {
-                        log.error("produce msg ex:{}", e.getMessage());
-                        return;
-                    }
-
-                    log.info("produce msg===>topic:{}, partition:{}, offset:{}, timeStamp:{}", recordMetadata.topic(),
-                            recordMetadata.partition(), recordMetadata.offset(), recordMetadata.timestamp());
-                }));
-            }
-        }, singleThreadPool);
+        CompletableFuture.runAsync(() -> produceMsg(TOPIC_ONE, (k) -> null), singleThreadPool);
     }
 
     public void two() {
-        CompletableFuture.runAsync(() -> produceMsgByKey(TOPIC_TWO), singleThreadPool);
+        CompletableFuture.runAsync(() -> produceMsg(TOPIC_TWO, this::buildKey), singleThreadPool);
     }
 
     public void three() {
-        CompletableFuture.runAsync(() -> produceMsgByKey(TOPIC_THREE), singleThreadPool);
+        CompletableFuture.runAsync(() -> produceMsg(TOPIC_THREE, this::buildKey), singleThreadPool);
     }
 
     @CostStatistics
-    private void produceMsgByKey(String topicName) {
-        for (int i = 1; i <= RECORD_NUM; i++) {
-            ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, buildKey(i),
+    private void produceMsg(String topicName, Function<Integer, String> function) {
+        final int recordNum = 1000000;
+        for (int i = 1; i <= recordNum; i++) {
+            ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, function.apply(i),
                     JSON.toJSONString(UserEntity.builder().id((long) (i % 100)).userName("bale" + i).build()));
             kafkaProducer.send(producerRecord, ((recordMetadata, e) -> {
                 if (e != null) {
@@ -77,7 +63,7 @@ public class KafkaProducerService {
         }
     }
 
-    private String buildKey(int i) {
+    private String buildKey(Integer i) {
         return String.valueOf(i % 100);
     }
 }

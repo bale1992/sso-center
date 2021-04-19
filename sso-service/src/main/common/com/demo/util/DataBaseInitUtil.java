@@ -11,6 +11,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * @author bale
+ */
 @Slf4j
 public final class DataBaseInitUtil {
 

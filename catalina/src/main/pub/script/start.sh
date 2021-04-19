@@ -25,10 +25,10 @@ JAVA_OPTS="$JAVA_OPTS -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
 export JAVA_OPTS="$JAVA_OPTS"
 
 #初始化数据库
-$APP_ROOT/script/initDataBase.sh
+bash $APP_ROOT/script/initDataBase.sh
 
 #创建topic
-$APP_ROOT/script/createTopic.sh
+bash $APP_ROOT/script/createTopic.sh
 
 #开启远程调试
 CATALINA_OPTS="-server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=39999"
