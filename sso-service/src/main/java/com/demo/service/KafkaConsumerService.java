@@ -16,6 +16,9 @@ import java.util.concurrent.ExecutorService;
 
 import static com.demo.util.KafkaClientUtil.TOPIC_ONE;
 
+/**
+ * @author bale
+ */
 @Slf4j
 @Service
 public class KafkaConsumerService {
@@ -23,7 +26,9 @@ public class KafkaConsumerService {
     private final ExecutorService fixedThreadPool = ExecutorsUtil
             .getFixedExecutorService(3, "consumerThreeThreadThreadPool");
 
-    // 消费单分区topic, 由于要保序, 因此只能单线程消费
+    /**
+     * 消费单分区topic, 由于要保序, 因此只能单线程消费
+     */
     public void consumeOne(RestfulContext context, ConsumerGroupEntity entity) {
         final KafkaConsumer<String, String> consumer = KafkaClientUtil.createConsumer(entity.getConsumerGroup());
         consumer.subscribe(Collections.singletonList(TOPIC_ONE));

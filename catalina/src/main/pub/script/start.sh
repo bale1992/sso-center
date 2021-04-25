@@ -20,7 +20,9 @@ fi
 export CATALINA_OUT=$CATALINA_LOG_DIR/catalina.out
 
 #JAVA启动参数
-JAVA_OPTS="-Dfile.encoding=UTF-8"
+HOST_IP=$(hostname --all-ip-addresses | awk '{print $1}')
+BOOTSTRAP_SERVER=$HOST_IP:9091,$HOST_IP:9092,$HOST_IP:9093
+JAVA_OPTS="-Dfile.encoding=UTF-8 -DBOOTSTRAP_SERVER=${BOOTSTRAP_SERVER}"
 JAVA_OPTS="$JAVA_OPTS -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
 export JAVA_OPTS="$JAVA_OPTS"
 

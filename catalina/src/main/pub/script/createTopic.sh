@@ -12,7 +12,7 @@ if [ ! -d $KAFKA_BIN ]; then
     exit 1
 fi
 
-HOST_IP=$(hostname --all-ip-addresses | awk '{print $2}')
+HOST_IP=$(hostname --all-ip-addresses | awk '{print $1}')
 export BOOTSTRAP_SERVER=$HOST_IP:9091,$HOST_IP:9092,$HOST_IP:9093
 for line in $(cat $TOPIC_CONF)
 do

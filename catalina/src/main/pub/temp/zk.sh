@@ -6,7 +6,7 @@ if [ -z $ZK_HOME ]; then
 fi
 
 # 替换IP
-HOST_IP_ADDR=$(hostname --all-ip-addresses | awk '{print $2}')
+HOST_IP_ADDR=$(hostname --all-ip-addresses | awk '{print $1}')
 ZK_BIN=$ZK_HOME/bin
 ZK_CONF=$ZK_HOME/conf
 sed -i "s/\${HOST_IP}/${HOST_IP_ADDR}/g" $ZK_CONF/zoo1.cfg
