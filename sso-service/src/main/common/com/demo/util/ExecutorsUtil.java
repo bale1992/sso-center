@@ -24,6 +24,12 @@ public final class ExecutorsUtil {
                 createThreadPoolExecutor(threadPoolName, 1, 1,
                         0L, TimeUnit.MILLISECONDS, 100));
     }
+    
+    public static ExecutorService getFixedExecutorService(int corePoolSize, String threadPoolName) {
+        return EXECUTOR_SERVICE_MAP.computeIfAbsent(threadPoolName, (k) ->
+                createThreadPoolExecutor(threadPoolName, corePoolSize, corePoolSize,
+                        0L, TimeUnit.MILLISECONDS, 100));
+    }
 
     private static ExecutorService createThreadPoolExecutor(String threadPoolName,
                                                             int corePoolSize,
