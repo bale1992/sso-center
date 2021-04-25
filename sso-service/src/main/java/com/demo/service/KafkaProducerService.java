@@ -29,15 +29,30 @@ public class KafkaProducerService {
 
     /**
      * 向单分区topic中生产100W条数据
+     *
+     * 家里环境测试时间间隔为: 22:06:25:993 ~ 22:08:26:137
+     * offset范围是: 1141815 ~ 2141814
      */
     public void one() {
         CompletableFuture.runAsync(() -> produceMsg(TOPIC_ONE, (k) -> null), singleThreadPool);
     }
 
+    /**
+     * 向两个分区topic中生产100W条数据
+     *
+     * 家里环境测试时间间隔为: 22:14:01:888 ~ 22:16:13:877
+     * offset范围是: 0 ~ ...
+     */
     public void two() {
         CompletableFuture.runAsync(() -> produceMsg(TOPIC_TWO, this::buildKey), singleThreadPool);
     }
 
+    /**
+     * 向三个分区topic中生产100W条数据
+     *
+     * 家里环境测试时间间隔为: 22:17:45:316 ~ 22:19:29:910
+     * offset范围是: 0 ~ ...
+     */
     public void three() {
         CompletableFuture.runAsync(() -> produceMsg(TOPIC_THREE, this::buildKey), singleThreadPool);
     }
@@ -53,7 +68,7 @@ public class KafkaProducerService {
                         JSON.toJSONString(UserEntity.builder().id((long) (i % 100)).userName("bale" + i).build()));
                 kafkaProducer.send(producerRecord, ((recordMetadata, e) -> {
                     if (e != null) {
-                        log.error("produce msg ex:{}", e.getMessage());
+                        log.error("produce msg ex: {}", e.getMessage());
                         return;
                     }
 
@@ -64,7 +79,7 @@ public class KafkaProducerService {
             kafkaProducer.commitTransaction(); // 提交事务
         } catch (Exception ex) {
             kafkaProducer.abortTransaction(); // 终止事务
-            log.error("produce msg ex:{}", ex.getMessage());
+            log.error("produce msg ex: {}", ex.getMessage());
         }
     }
 

@@ -11,6 +11,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.UUID;
 
 /**
  * @author bale
@@ -31,6 +32,7 @@ public final class KafkaClientUtil {
             properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, getBootStrapServer());
             properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
             properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+            properties.setProperty(ProducerConfig.TRANSACTIONAL_ID_CONFIG, generateTransactionId());
             properties.load(inputStream);
             return new KafkaProducer<>(properties);
         } catch (IOException e) {
@@ -56,5 +58,9 @@ public final class KafkaClientUtil {
 
     private static String getBootStrapServer() {
         return System.getProperty("BOOTSTRAP_SERVER", DEFAULT_SERVER);
+    }
+
+    private static String generateTransactionId() {
+        return UUID.randomUUID().toString();
     }
 }

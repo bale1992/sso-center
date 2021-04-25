@@ -7,7 +7,7 @@
             <!--ThresholdFilter :日志输出过滤-->
             <!--level="info" :日志级别,onMatch="ACCEPT" :级别在info之上则接受,onMismatch="DENY" :级别在info之下则拒绝-->
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
-            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] [%t] - %l - %m%n"/>
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] [%t] - %l - %m%n"/>
             <!-- Policies :日志滚动策略-->
             <Policies>
                 <!-- TimeBasedTriggeringPolicy :时间滚动策略,默认0点小时产生新的文件,interval="6" :
@@ -22,7 +22,7 @@
         <RollingFile name="KafkaProducer" fileName="logs/kafka-producer.log"
                      filePattern="logs/kafka-producer-%d{yyyy-MM-dd}-%i.log">
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
-            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] [%t] - %l - %m%n"/>
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] [%t] - %l - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
@@ -32,7 +32,7 @@
         <RollingFile name="KafkaConsumer" fileName="logs/kafka-consumer.log"
                      filePattern="logs/kafka-consumer-%d{yyyy-MM-dd}-%i.log">
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
-            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] [%t] - %l - %m%n"/>
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss:SSS}] [%p] [%t] - %l - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
                 <SizeBasedTriggeringPolicy size="100 MB"/>
