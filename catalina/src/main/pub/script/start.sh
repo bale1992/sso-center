@@ -19,18 +19,19 @@ if [ ! -d $CATALINA_LOG_DIR ];then
 fi
 export CATALINA_OUT=$CATALINA_LOG_DIR/catalina.out
 
-#JAVA启动参数
-HOST_IP=$(hostname --all-ip-addresses | awk '{print $1}')
-BOOTSTRAP_SERVER=$HOST_IP:9091,$HOST_IP:9092,$HOST_IP:9093
-JAVA_OPTS="-Dfile.encoding=UTF-8 -DBOOTSTRAP_SERVER=${BOOTSTRAP_SERVER}"
-JAVA_OPTS="$JAVA_OPTS -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
-export JAVA_OPTS="$JAVA_OPTS"
-
 #初始化数据库
 bash $APP_ROOT/script/initDataBase.sh
 
 #创建topic
 bash $APP_ROOT/script/createTopic.sh
+
+#JAVA启动参数
+HOST_IP=$(hostname --all-ip-addresses | awk '{print $1}')
+DATASOURCE=$APP_ROOT/etc/datasource/datasource.properties
+BOOTSTRAP_SERVER=$HOST_IP:9091,$HOST_IP:9092,$HOST_IP:9093
+JAVA_OPTS="-Dfile.encoding=UTF-8 -DBOOTSTRAP_SERVER=${BOOTSTRAP_SERVER} -Dinit.dataSource=$DATASOURCE"
+JAVA_OPTS="$JAVA_OPTS -DNFW=$APP_PROCESS_NAME -Dprocname=$APP_PROCESS_NAME "
+export JAVA_OPTS="$JAVA_OPTS"
 
 #开启远程调试
 CATALINA_OPTS="-server -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=39999"

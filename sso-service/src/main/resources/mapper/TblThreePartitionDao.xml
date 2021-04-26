@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.dao.TblThreePartitionDao">
+
+    <resultMap type="com.demo.entity.ProduceInfoEntity" id="TblThreePartitionMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="age" column="age" jdbcType="INTEGER"/>
+        <result property="createTime" column="createTime" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TblThreePartitionMap">
+        select id,
+               name,
+               age,
+               createTime
+        from ssoservicedb.TBL_THREE_PARTITION
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TblThreePartitionMap">
+        select id,
+               name,
+               age,
+               createTime
+        from ssoservicedb.TBL_THREE_PARTITION
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TblThreePartitionMap">
+        select
+        id, name, age, createTime
+        from ssoservicedb.TBL_THREE_PARTITION
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="age != null">
+                and age = #{age}
+            </if>
+            <if test="createTime != null and createTime != ''">
+                and createTime = #{createtime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into ssoservicedb.TBL_THREE_PARTITION(name, age, createTime)
+        values (#{name}, #{age}, #{createtime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into ssoservicedb.TBL_THREE_PARTITION(name, age, createTime)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.age}, #{entity.createtime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" parameterType="java.util.List">
+        insert into ssoservicedb.TBL_THREE_PARTITION(name, age, createTime)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.age}, #{entity.createtime})
+        </foreach>
+        on duplicate key update
+        name = values(name) , age = values(age) , createTime = values(createTime)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update ssoservicedb.TBL_THREE_PARTITION
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="createTime != null and createTime != ''">
+                createTime = #{createtime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from ssoservicedb.TBL_THREE_PARTITION
+        where id = #{id}
+    </delete>
+
+</mapper>

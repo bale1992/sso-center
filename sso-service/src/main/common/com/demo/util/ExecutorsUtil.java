@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 public final class ExecutorsUtil {
 
     private static final Map<String, ExecutorService> EXECUTOR_SERVICE_MAP = new ConcurrentHashMap<>();
+
+    private static final Map<String, ScheduledExecutorService> SCHEDULED_EXECUTOR_SERVICE_MAP = new ConcurrentHashMap<>();
 
     private ExecutorsUtil() {
     }
@@ -29,6 +33,12 @@ public final class ExecutorsUtil {
         return EXECUTOR_SERVICE_MAP.computeIfAbsent(threadPoolName, (k) ->
                 createThreadPoolExecutor(threadPoolName, corePoolSize, corePoolSize,
                         0L, TimeUnit.MILLISECONDS, 100));
+    }
+
+    public static ScheduledExecutorService getScheduledExecutorService(int corePoolSize, String threadPoolName) {
+        return SCHEDULED_EXECUTOR_SERVICE_MAP.computeIfAbsent(threadPoolName, (k) ->
+                new ScheduledThreadPoolExecutor(corePoolSize,
+                        new ThreadFactoryBuilder().setNameFormat(threadPoolName + "_%d").build()));
     }
 
     private static ExecutorService createThreadPoolExecutor(String threadPoolName,

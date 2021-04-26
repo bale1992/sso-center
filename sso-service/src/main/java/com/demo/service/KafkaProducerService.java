@@ -1,7 +1,7 @@
 package com.demo.service;
 
 import com.alibaba.fastjson.JSON;
-import com.demo.entity.UserEntity;
+import com.demo.entity.ProduceInfoEntity;
 import com.demo.util.ExecutorsUtil;
 import com.demo.util.KafkaClientUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
@@ -64,8 +66,7 @@ public class KafkaProducerService {
         kafkaProducer.beginTransaction(); // 开始事务
         try {
             for (int i = 1; i <= recordNum; i++) {
-                ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, function.apply(i),
-                        JSON.toJSONString(UserEntity.builder().id((long) (i % 100)).userName("bale" + i).build()));
+                ProducerRecord<String, String> producerRecord = buildProducerRecord(i, topicName, function);
                 kafkaProducer.send(producerRecord, ((recordMetadata, e) -> {
                     if (e != null) {
                         log.error("produce msg ex: {}", e.getMessage());
@@ -85,5 +86,15 @@ public class KafkaProducerService {
 
     private String buildKey(Integer i) {
         return String.valueOf(i % 100);
+    }
+
+    private ProducerRecord<String, String> buildProducerRecord(int index, String topicName, Function<Integer, String> func) {
+        ProduceInfoEntity entity = ProduceInfoEntity.builder()
+                .id(index % 100)
+                .name("bale" + index)
+                .age(index)
+                .createTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))
+                .build();
+        return new ProducerRecord<>(topicName, func.apply(index), JSON.toJSONString(entity));
     }
 }

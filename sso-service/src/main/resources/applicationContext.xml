@@ -12,19 +12,11 @@
                            http://www.springframework.org/schema/aop
                            https://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <context:property-placeholder location="classpath:jdbc.properties" />
-
     <context:component-scan base-package="com.demo" />
 
     <context:annotation-config/>
 
-    <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" name="dataSource">
-        <property name="idleConnectionTestPeriod" value="${jdbc.idleConnectionTestPeriod}" />
-        <property name="user" value="${jdbc.user}" />
-        <property name="password" value="${jdbc.passwd}" />
-        <property name="driverClass" value="${jdbc.driver}" />
-        <property name="jdbcUrl" value="${jdbc.url}" />
-    </bean>
+    <bean class="com.demo.util.DataBaseInitUtil" name="dataSource" factory-method="createDataSource" />
 
     <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" name="dataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
